@@ -1,43 +1,29 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
-import { Response } from 'express';
+import { LoginDto } from './dto/login.dto';
+import { Public } from 'src/helpers/public';
+// import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  // @Public()
   @Post('register')
-  async register(@Res({passthrough: true}) res: Response , @Body() registerDto: RegisterDto) {
-    // return this.authService.register(registerDto);
-    const token = await this.authService.register(registerDto);
-
-    //set token as cookies
-    res.cookie('jwt', token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-      maxAge: 1000 * 60 * 60 * 24, // 1 day
-      });
-
-      return { message:'User registered successfully' };
+  async register(@Body() registerDto: RegisterDto) {
+    return this.authService.register(registerDto);
   }
 
-  @Post('login')
-  async login(@Res({passthrough: true}) res: Response, @Body() loginDto: RegisterDto) {
-    // return this.authService.login(loginDto);
+    @Public()
+    @Post('login')
+    async login(@Body() loginDto: LoginDto) {
+      return this.authService.login(loginDto);
+    }
 
-    const token = await this.authService.login(loginDto);
-
-    //set token as cookies
-    res.cookie('jwt', token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-      maxAge: 1000 * 60 * 60 * 24, // 1 day
-      });
-
-      
-      return { message: 'User logged in successfully' };
-  }
+    // @Public()
+    // @Post('update-profile')
+    // async updateProfile(@Body() updateProfileDto: CreateUserDto) {
+    //   return this.authService.updateProfile(updateProfileDto);
+    // }
 }

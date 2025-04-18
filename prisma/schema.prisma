@@ -15,13 +15,34 @@ datasource db {
 }
 
 model User{
-  id Int @id @default(autoincrement())
+  id Int @default(autoincrement()) @unique
   Name String 
   Email String @db.VarChar(191) @unique
   Password String 
-  profilePic String? 
+  profilePic String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+    sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+
+
   @@map("users")
+
 }
+
+model Message {
+  id Int @id @default(autoincrement())
+  senderId Int
+  receiverId Int
+  text String
+  image String
+  created_at DateTime @default(now())
+
+  sender User @relation("SentMessages", fields: [senderId], references: [id])
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id])
+
+  @@map("messages")
+}
+
+
